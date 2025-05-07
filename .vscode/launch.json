@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/haoran/Desktop/Project/C++/programming-assignment-3-pokemon-battle-HaoranGuo1",
+      "program": "/Users/haoran/Desktop/Project/C++/programming-assignment-3-pokemon-battle-HaoranGuo1/build/Debug/outDebug"
+    }
+  ]
+}
