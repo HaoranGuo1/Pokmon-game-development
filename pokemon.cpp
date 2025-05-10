@@ -107,7 +107,7 @@ void Pokemon::attack_other(Pokemon& target, int move_index) {
     // Calculate damage using formula
     double base = static_cast<double>(attack) / target.defense;
     double raw_damage = base * multiplier * move.base_damage * critical;
-   int damage = static_cast<int>(std::ceil(raw_damage));
+    int damage = static_cast<int>(std::ceil(raw_damage));
 
     // Apply damage
     target.hp -= damage;
@@ -120,6 +120,10 @@ void Pokemon::attack_other(Pokemon& target, int move_index) {
 
     // Print result
     std::cout << name << "uses" << move.name << " on " << target.name << " for " << damage << " damage!" << std::endl;
+
+    std::cout << "Value of type_interaction: " << multiplier << std::endl;
+    std::cout << "Value of random_critical: " << critical << std::endl;
+    std::cout << "Value of damage: " << damage << std::endl;
 
     if (critical == 3) {
         std::cout << "It was a critical hit!" << std::endl;

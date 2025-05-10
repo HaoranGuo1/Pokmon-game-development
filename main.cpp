@@ -23,38 +23,76 @@ int main() {
 
     // Trainer 1
     if (trainer_1_pokemon_choice == 1) {
-        Move* moves = new Move[1]{{"Ember", "fire", 5, 15}};
+        Move* moves = new Move[1];
+        moves[0].name = "Ember"; 
+        moves[0].type = "fire";
+        moves[0].base_damage = 5;
+        moves[0].uses_left = 15;
         p1 = Pokemon("Charmander", "fire", 6, 4, 18, moves, 1);
+
     } else if (trainer_1_pokemon_choice == 2) {
-        Move* moves = new Move[2]{
-            {"Tackle", "normal", 3, 10000},
-            {"Water Gun", "water", 5, 3}
-        };
+        Move* moves = new Move[2];
+
+        moves[0].name = "Tackle"; 
+        moves[0].type = "normal";
+        moves[0].base_damage = 3;
+        moves[0].uses_left = 10000;
+
+        moves[1].name = "Water Gun"; 
+        moves[1].type = "water";
+        moves[1].base_damage = 5;
+        moves[1].uses_left = 3;
         p1 = Pokemon("Squirtle", "water", 4, 6, 22, moves, 2);
+
     } else {
-        Move* moves = new Move[2]{
-            {"Tackle", "normal", 3, 10000},
-            {"Vine Whip", "grass", 5, 3}
-        };
+        Move* moves = new Move[2];
+        moves[0].name = "Tackle"; 
+        moves[0].type = "normal";
+        moves[0].base_damage = 3;
+        moves[0].uses_left = 10000;
+
+        moves[1].name = "Vine Whip"; 
+        moves[1].type = "grass";
+        moves[1].base_damage = 5;
+        moves[1].uses_left = 3;
         p1 = Pokemon("Bulbasaur", "grass", 5, 5, 20, moves, 2);
     }
 
     // Trainer 2
     if (trainer_2_pokemon_choice == 1) {
-        Move* moves = new Move[1]{{"Ember", "fire", 5, 15}};
+        Move* moves = new Move[1];
+        moves[0].name = "Ember"; 
+        moves[0].type = "fire";
+        moves[0].base_damage = 5;
+        moves[0].uses_left = 15;
         p2 = Pokemon("Charmander", "fire", 6, 4, 18, moves, 1);
+
     } else if (trainer_2_pokemon_choice == 2) {
-        Move* moves = new Move[2]{
-            {"Tackle", "normal", 3, 10000},
-            {"Water Gun", "water", 5, 3}
-        };
+        Move* moves = new Move[2];
+        moves[0].name = "Tackle"; 
+        moves[0].type = "normal";
+        moves[0].base_damage = 3;
+        moves[0].uses_left = 10000;
+
+        moves[1].name = "Water Gun"; 
+        moves[1].type = "water";
+        moves[1].base_damage = 5;
+        moves[1].uses_left = 3;
         p2 = Pokemon("Squirtle", "water", 4, 6, 22, moves, 2);
+
     } else {
-        Move* moves = new Move[2]{
-            {"Tackle", "normal", 3, 10000},
-            {"Vine Whip", "grass", 5, 3}
-        };
+        Move* moves = new Move[2];
+        moves[0].name = "Tackle"; 
+        moves[0].type = "normal";
+        moves[0].base_damage = 3;
+        moves[0].uses_left = 10000;
+
+        moves[1].name = "Vine Whip"; 
+        moves[1].type = "grass";
+        moves[1].base_damage = 5;
+        moves[1].uses_left = 3;
         p2 = Pokemon("Bulbasaur", "grass", 5, 5, 20, moves, 2);
+
     }
 
 	// TODO Create a battle object containing the two pokemon objects

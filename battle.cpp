@@ -57,7 +57,7 @@ void Battle::handle_turn(Pokemon& attacker, Pokemon& defender, bool& used_heal) 
         if (choice == 1) {
             attacker.print_moves();
             int move_index;
-            std::cout << "Choose move index: ";
+            std::cout << "Your choice: ";
             std::cin >> move_index;
             attacker.attack_other(defender, move_index);
             break;
