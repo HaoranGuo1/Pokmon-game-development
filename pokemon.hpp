@@ -4,37 +4,59 @@
 #include <string>
 #include "move.hpp"
 
+/*
+    Author: Haoran Guo
+    Description: Defines the Pokemon class, which stores a Pokémon's name, type, stats, and a dynamic array of moves. It supports actions like attacking and healing.
+*/
+
 class Pokemon {
     private:
         std::string name;
         std::string type;
-        move* moves;
-        std::string* move_names;
-        int* move_damages;
-        
+        int attack, defense, hp, max_hp;
+
+        Move* moves;
         int num_moves;
-        int attack;
-        int defense;
-        int current_hp;
-        int max_hp;
 
     public:
-        Pokemon(std::string name, int current_hp, int num_moves,
-            std::string* move_names, int* move_damages);
+        // Constructor
+        Pokemon(std::string name, std::string type, int attack, int defense, int max_hp, Move* moves, int num_moves);
+
+        // Copy constructor
+        Pokemon(const const Pokemon& other);
+
+        // Assignment operator
+        Pokemon& operator=(const Pokemon& other);
+
+        // Destructor
         ~Pokemon();
 
-        void Attack(Pokemon& target, int move_index);
+        // perform an attack on another Pokémon
+        void attack_other(Pokemon& target, int move_index);
 
-        void print_hp();
-
-        void set_decision(std::string str);
+        // Heal this Pokémon
         void heal();
 
+        // Print name and current HP
+        void print_status() const;
+
+        // Check if Pokémon is fainted
+        bool is_fainted() const;
+
+        // Get Pokémon name
         std::string get_name() const;
 
-        
-        void set_hp(int current, int max);
-        int get_hp() const;
+        // Get number of moves
+        int get_num_moves() const;
+
+        // print move list with usage information
+        void print_moves() const;
+
+        // Get move by index (for damage calc)
+        Move get_move(int index) const;
+
+        // Reduce move usage by 1
+        void use_move(int index);
 };
 
 

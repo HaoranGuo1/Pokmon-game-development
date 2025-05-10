@@ -3,31 +3,47 @@
 #include "startup.hpp"
 #include "pokemon.hpp"
 #include "battle.hpp"
+#include "move.hpp"
 
 int main() {
 
 	Battle b;
-	// Pokemon p;
-	// p.set_hp(45,50);
+	// Set up moves for Charmander
+    Move ember = {"Ember", "fire", 5, 15};
+    Move moves1[] = {ember};
 
-	// std::cout << "Before heal: " << p.get_hp() << std::endl;
+    // Set up moves for Bulbasaur
+    Move tackle = {"Tackle", "normal", 3, 10000};
+    Move vine = {"Vine Whip", "grass", 5, 3};
+    Move moves2[] = {tackle, vine};
 
-	// p.heal();
+    // Create two Pokémon
+    Pokemon charmander("Charmander", "fire", 6, 4, 18, moves1, 1);
+    Pokemon bulbasaur("Bulbasaur", "grass", 5, 5, 20, moves2, 2);
 
-	// std::cout << "after heal: " << p.get_hp() << std::endl;
-	
- 	std::string pikachu_names[] = {"Thunderbolt", "Quick Attack"};
-    int pikachu_damages[] = {40, 20};
+    // Initial status
+    std::cout << "Before battle:" << std::endl;
+    charmander.print_status();
+    bulbasaur.print_status();
+    std::cout << std::endl;
 
-    std::string bulbasaur_names[] = {"Vine Whip", "Tackle"};
-    int bulbasaur_damages[] = {30, 15};
+    // Charmander attacks Bulbasaur using Ember
+    std::cout << "Charmander attacks!" << std::endl;
+    charmander.attack_other(bulbasaur, 0);
 
-    Pokemon pikachu("Pikachu", 100, 2, pikachu_names, pikachu_damages);
-    Pokemon bulbasaur("Bulbasaur", 100, 2, bulbasaur_names, bulbasaur_damages);
+    // Print status after attack
+    std::cout << "\nAfter attack:" << std::endl;
+    charmander.print_status();
+    bulbasaur.print_status();
+    std::cout << std::endl;
 
-    bulbasaur.print_hp();
-    pikachu.Attack(bulbasaur, 0);  // Thunderbolt
-    bulbasaur.print_hp();
+    // Bulbasaur heals
+    std::cout << "Bulbasaur uses a potion!" << std::endl;
+    bulbasaur.heal();
+
+    // Print status after healing
+    std::cout << "\nAfter healing:" << std::endl;
+    bulbasaur.print_status();
 
     return 0;
 
@@ -46,6 +62,8 @@ int main() {
 	// TODO Use if statements to determine which pokemon was chosen by
 	// each player and create respective pokemon objects with the
 	// appropriate types, stats, and moves
+
+
 
 	// TODO Create a battle object containing the two pokemon objects
 	// created above, and then start the battle

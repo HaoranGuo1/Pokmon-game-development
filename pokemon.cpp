@@ -1,65 +1,214 @@
 #include <iostream>
+#include <cmath>    // for ceil() 
+#include <cstdlib>  // for rand()
 #include "pokemon.hpp"
 
-void Pokemon::heal(){
-    current_hp += 10;
-    if (current_hp > max_hp){
-        current_hp = max_hp;
+/*
+    Author: Haoran Guo
+    Description: Implements the Pokemon class, including dynamic memory management and battle-related behavior like attacking and healing.
+*/
+
+// Constructor
+Pokemon::Pokemon(std::string name, std::string type, int attack, int defense, int max_hp, Move* moves, int num_moves) {
+    this->name = name;
+    this->type = type;
+    this->attack = attack;
+    this->defense = defense;
+    this->max_hp = max_hp;
+    this->hp = max_hp;
+
+    this->num_moves = num_moves;
+    this->moves = new Move[num_moves];
+
+    for(int i = 0; i < num_moves; i++){
+        this->moves[i] = moves[i];
+    }
+}
+
+// Copy constructor
+Pokemon::Pokemon(const Pokemon& other) {
+    name = other.name;
+    type = other.type;
+    attack = other.attack;
+    defense = other.defense;
+    max_hp = other.max_hp;
+    hp = other.hp;
+    num_moves = other.num_moves;
+
+    moves = new Move[num_moves];
+    for (int i = 0; i < num_moves; i++) {
+        moves[i] = other.moves[i];
     } 
 }
 
-Pokemon::Pokemon(std::string name, int current_hp, int num_moves, std::string* move_names, int* move_damages){
-    this->name = name;
-    this->current_hp = current_hp;
-    this-> num_moves = num_moves;
+// Assignment operator
+Pokemon& Pokemon::operator=(const Pokemon& other) {
+    if (this != &other) {
+        delete[] moves;
 
-    this-> move_names = new std::string[num_moves];
-    this->move_damages = new int[num_moves];
-    for(int i = 0; i < num_moves; i++){
-        this->move_names[i] = move_names[i];
-        this->move_damages[i] = move_damages[i];    
+        name = other.name;
+        type = other.type;
+        attack = other.attack;
+        defense = other.defense;
+        max_hp = other.max_hp;
+        hp = other.hp;
+        num_moves = other.num_moves;
+
+        moves = new Move[num_moves];
+        for (int i = 0; i < num_moves; i++) {
+            moves[i] = other.moves[i];
+        } 
     }
-    this->attack = 50;
-    this->defense = 30;
+    return *this;
 }
 
-Pokemon::~Pokemon(){
-    delete [] move_names;
-    delete [] move_damages;
+// Destructor
+Pokemon::~Pokemon() {
+    delete[] moves;
 }
 
+/*
+    Function: attack_other
+    Description: This function allows the current Pokémon to attack another Pokémon using a selected move. It calculates damage based on type and stats, applies critical hit chance, and reduces the opponent's HP.
+    Parameters:
+        - target (Pokemon&): the Pokémon to be attacked
+        - move_index (int): index of the move to be used
+    Side effects: modifies target.hp and prints attack information
+*/
+void Pokemon::attack_other(Pokemon& target, int move_index) {
+    if (move_index < 0 || move_index >= num_moves) {
+        std::cout << "Invalid move index!" << std::endl;
+        return;
+    }
+
+    if (moves[move_index].uses_left <= 0){
+        std::cout << "No uses left for this move!" << std::endl;
+        return;
+    }
+    
+    Move move = moves[move_index];
+
+    // Type multiplier logic
+    double multiplier = 1.0;
+    if (move.type == "fire") {
+        if (target.type == "grass") multiplier = 2.0;
+        else if (target.type == "water") multiplier = 0.5;
+    } else if (move.type == "water") {
+        if (target.type == "fire") multiplier = 2.0;
+        else if (target.type == "grass") multiplier = 0.5;
+    } else if (move.type == "grass") {
+        if (target.type == "water") multiplier = 2.0;
+        else if (target.type == "fire") multiplier = 0.5;
+    } 
+
+    // Critical hit (10% chance)
+    int critical = (rand() % 10 == 0) ? 3 : 1;
+
+    // Calculate damage using formula
+    double base = static_cast<double>(attack) / target.defense;
+    double raw_damage = base * multiplier * move.base_damage * critical;
+   int damage = static_cast<int>(std::ceil(raw_damage));
+
+    // Apply damage
+    target.hp -= damage;
+    if (target.hp < 0) {
+        target.hp = 0;
+    }
+
+    // Use up one move
+    moves[move_index].uses_left--;
+
+    // Print result
+    std::cout << name << "uses" << move.name << " on " << target.name << " for " << damage << " damage!" << std::endl;
+
+    if (critical == 3) {
+        std::cout << "It was a critical hit!" << std::endl;
+    }
+
+    if (multiplier == 2.0) {
+        std::cout << "It's super effective!" << std::endl;
+    } else if (multiplier == 0.5) {
+        std::cout << "It's not very effective..." << std::endl;
+    } 
+}
+
+/*
+    Function: heal
+    Description: Restores 10 HP to the Pokémon, without going over max HP.
+ */
+void Pokemon::heal() {
+    hp += 10;
+    if (hp > max_hp){
+        hp = max_hp;
+    } 
+    std::cout << name << "healed! Current HP: " << hp << "/" << max_hp << std::endl;
+}
+
+/*
+    Function: print_stats
+    Description: Displays the Pokémon's name and current HP.
+*/
+void Pokemon::print_status() const {
+    std::cout << name << " - HP: " << hp << "/" << max_hp << std::endl;
+}
+
+/*
+    Function: print_moves
+    Description: Prints all available moves and their remaining uses.
+*/
+void Pokemon::print_moves() const {
+    for (int i = 0; i < num_moves; i++) {
+        std::cout << i << ": " << moves[i].name 
+            << " (" << moves[i].type << ", " 
+            << moves[i].base_damage << " dmg, uses left: " 
+            << moves[i].uses_left << ")" << std::endl;
+    }
+}
+
+/*
+    Function: is_fainted
+    Description: Returns true if the Pokémon's HP is 0.
+ */
+bool Pokemon::is_fainted() const {
+    return hp <= 0;
+}
+
+/*
+    Function: get_name
+    Description: Returns the Pokémon's name.
+ */
 std::string Pokemon::get_name() const {
     return name;
 }
 
 
-void Pokemon::Attack(Pokemon& target, int move_index) {
-    if (move_index < 0 || move_index >= num_moves) {
-        std::cout << "Invalid move index!" << std::endl;
-        return;
+/*
+    Function: get_num_moves
+    Description: Returns the number of available moves.
+ */
+int Pokemon::get_num_moves() const {
+    return num_moves;
+}
+
+
+/*
+    Function: get_move
+    Description: Returns a copy of the move at the given index.
+ */
+Move Pokemon::get_move(int index) const {
+    if (index >= 0 && index < num_moves) {
+        return moves[index];
     }
-   int damage = move_damages[move_index] + (attack / 2) - (target.defense / 4);
-    if (damage < 0) damage = 0;
-
-   std::cout << name << " attacks " << target.get_name()
-              << " using " << move_names[move_index]
-              << " for " << damage << " damage." << std::endl;
-
-    int new_hp = target.get_hp() - damage;
-    if (new_hp < 0) new_hp = 0;
-    target.set_hp(new_hp, target.max_hp);
+    // Return a dummy move if out of range
+    return Move{"Invalid", "none", 0, 0};
 }
 
-
-void Pokemon::print_hp(){
-    std::cout << name << "s HP: " << current_hp << std::endl;
-}
-
-void Pokemon::set_hp(int current, int max){
-    current_hp = current;
-    max_hp = max;
-}
-
-int Pokemon::get_hp() const {
-    return current_hp;
+/*
+    Function: use_move
+    Description: Decreases the usage count of the selected move by 1.
+ */
+void Pokemon::use_move(int index) {
+    if (index >= 0 && index < num_moves && moves[index].uses_left > 0) {
+        moves[index].uses_left--;
+    }
 }
