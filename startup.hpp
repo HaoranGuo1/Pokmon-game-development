@@ -7,10 +7,10 @@
 /*
  * Function: prompt_first_pokemon
  * Description: Prompts trainer 1 for their pokemon of choice. Loops until
- * 	user supplies valid choice value.
+ *  user supplies valid choice value.
  * Returns (int): Numeric code for trainer 1's pokemon of choice. Returns 1 if
- * 	the trainer chooses Charmander, 2 if the trainer chooses Squirtle, and
- * 	3 if the trainer chooses Bulbasaur.
+ *  the trainer chooses Charmander, 2 if the trainer chooses Squirtle, and
+ *  3 if the trainer chooses Bulbasaur.
  */
 int prompt_first_pokemon();
 

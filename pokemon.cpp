@@ -200,7 +200,12 @@ Move Pokemon::get_move(int index) const {
         return moves[index];
     }
     // Return a dummy move if out of range
-    return Move{"Invalid", "none", 0, 0};
+    Move dummy;
+    dummy.name = "Invalid";
+    dummy.type = "none";
+    dummy.base_damage = 0;
+    dummy.uses_left = 0;
+    return dummy;
 }
 
 /*

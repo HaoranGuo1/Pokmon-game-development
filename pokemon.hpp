@@ -23,7 +23,7 @@ class Pokemon {
         Pokemon(std::string name, std::string type, int attack, int defense, int max_hp, Move* moves, int num_moves);
 
         // Copy constructor
-        Pokemon(const const Pokemon& other);
+        Pokemon(const Pokemon& other);
 
         // Assignment operator
         Pokemon& operator=(const Pokemon& other);

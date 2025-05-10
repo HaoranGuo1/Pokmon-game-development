@@ -2,7 +2,6 @@
 // want to replace it with your own solution.
 
 #include <iostream>
-
 #include "startup.hpp"
 
 int prompt_first_pokemon() {
