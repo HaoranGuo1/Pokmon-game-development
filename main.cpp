@@ -44,7 +44,7 @@ int main() {
         moves[1].uses_left = 3;
         p1 = Pokemon("Squirtle", "water", 4, 6, 22, moves, 2);
 
-    } else {
+    } else if (trainer_1_pokemon_choice == 3) {
         Move* moves = new Move[2];
         moves[0].name = "Tackle"; 
         moves[0].type = "normal";
@@ -56,6 +56,18 @@ int main() {
         moves[1].base_damage = 5;
         moves[1].uses_left = 3;
         p1 = Pokemon("Bulbasaur", "grass", 5, 5, 20, moves, 2);
+    } else if (trainer_1_pokemon_choice == 4) {
+        Move* moves = new Move[2];
+        moves[0].name = "Tackle";
+        moves[0].type = "normal";
+        moves[0].base_damage = 3;
+        moves[0].uses_left = 10000;
+
+        moves[1].name = "Wing Attack";
+        moves[1].type = "flying";
+        moves[1].base_damage = 5;
+        moves[1].uses_left = 3;
+        p1 = Pokemon("Pidgey", "flying", 4, 4, 18, moves, 2);
     }
 
     // Trainer 2
@@ -80,7 +92,7 @@ int main() {
         moves[1].uses_left = 3;
         p2 = Pokemon("Squirtle", "water", 4, 6, 22, moves, 2);
 
-    } else {
+    } else if (trainer_2_pokemon_choice == 3) {
         Move* moves = new Move[2];
         moves[0].name = "Tackle"; 
         moves[0].type = "normal";
@@ -93,6 +105,18 @@ int main() {
         moves[1].uses_left = 3;
         p2 = Pokemon("Bulbasaur", "grass", 5, 5, 20, moves, 2);
 
+    } else if (trainer_2_pokemon_choice == 4) {
+        Move* moves = new Move[2];
+        moves[0].name = "Tackle";
+        moves[0].type = "normal";
+        moves[0].base_damage = 3;
+        moves[0].uses_left = 10000;
+        
+        moves[1].name = "Wing Attack";
+        moves[1].type = "flying";
+        moves[1].base_damage = 5;
+        moves[1].uses_left = 3;
+        p2 = Pokemon("Pidgey", "flying", 4, 4, 18, moves, 2);
     }
 
 	// TODO Create a battle object containing the two pokemon objects

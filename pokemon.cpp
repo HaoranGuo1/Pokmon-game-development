@@ -99,7 +99,10 @@ void Pokemon::attack_other(Pokemon& target, int move_index) {
     } else if (move.type == "grass") {
         if (target.type == "water") multiplier = 2.0;
         else if (target.type == "fire") multiplier = 0.5;
-    } 
+        else if (target.type == "flying") multiplier = 0.5;
+    } else if (move.type == "flying") {
+        if (target.type == "grass") multiplier = 2.0;
+    }
 
     // Critical hit (10% chance)
     int critical = (rand() % 10 == 0) ? 3 : 1;
@@ -119,7 +122,7 @@ void Pokemon::attack_other(Pokemon& target, int move_index) {
     moves[move_index].uses_left--;
 
     // Print result
-    std::cout << name << "uses" << move.name << " on " << target.name << " for " << damage << " damage!" << std::endl;
+    std::cout << name << " uses " << move.name << " on " << target.name << " for " << damage << " damage!" << std::endl;
 
     std::cout << "Value of type_interaction: " << multiplier << std::endl;
     std::cout << "Value of random_critical: " << critical << std::endl;
@@ -164,7 +167,7 @@ void Pokemon::print_moves() const {
     for (int i = 0; i < num_moves; i++) {
         std::cout << i << ": " << moves[i].name 
             << " (" << moves[i].type << ", " 
-            << moves[i].base_damage << " dmg, uses left: " 
+            << moves[i].base_damage << " damage, uses remaining: " 
             << moves[i].uses_left << ")" << std::endl;
     }
 }

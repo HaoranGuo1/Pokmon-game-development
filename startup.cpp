@@ -7,39 +7,47 @@
 int prompt_first_pokemon() {
 	int choice;
 	do {
-		std::cout << "Trainer 1: Which pokemon would you like?" <<
-			std::endl;
+		std::cout << "Trainer 1: Which pokemon would you like?" << std::endl;
 		std::cout << "1. Charmander" << std::endl;
 		std::cout << "2. Squirtle" << std::endl;
 		std::cout << "3. Bulbasaur" << std::endl;
-		std::cout << std::endl << "Your choice: ";
+		std::cout << "4. Pidgey" << std::endl;
+		std::cout << "\nYour choice: ";
 		std::cin >> choice;
 
 		std::cout << std::endl;
 
-		if (choice < 1 || choice > 3) {
-			std::cout << "Invalid option!" <<
-				std::endl << std::endl;
+		if (choice < 1 || choice > 4) {
+			std::cout << "Invalid option!" << std::endl;
 		}
-	} while(choice < 1 || choice > 3);
+	} while(choice < 1 || choice > 4);
 	return choice;
 }
 
 int prompt_second_pokemon(int blacklisted_pokemon) {
 	int choice;
 	do {
-		std::cout << "Trainer 2: Which pokemon would you like?" <<
-			std::endl;
+		std::cout << "Trainer 2: Which pokemon would you like?" << std::endl;
 
 		if (blacklisted_pokemon == 1) {
 			std::cout << "1. Squirtle" << std::endl;
 			std::cout << "2. Bulbasaur" << std::endl;
+			std::cout << "3. Pidgey" << std::endl;
+
 		} else if (blacklisted_pokemon == 2) {
 			std::cout << "1. Charmander" << std::endl;
 			std::cout << "2. Bulbasaur" << std::endl;
-		} else {
+			std::cout << "3. Pidgey" << std::endl;
+
+		} else if (blacklisted_pokemon == 3) {
 			std::cout << "1. Charmander" << std::endl;
 			std::cout << "2. Squirtle" << std::endl;
+			std::cout << "3. Pidgey" << std::endl;
+
+		} else if (blacklisted_pokemon == 4) {
+			std::cout << "1. Charmander" << std::endl;
+			std::cout << "2. Squirtle" << std::endl;
+			std::cout << "3. Bulbasaur" << std::endl;
 		}
 
 		std::cout << std::endl << "Your choice: ";
@@ -47,11 +55,10 @@ int prompt_second_pokemon(int blacklisted_pokemon) {
 
 		std::cout << std::endl;
 
-		if (choice < 1 || choice > 2) {
-			std::cout << "Invalid option!" <<
-				std::endl << std::endl;
+		if (choice < 1 || choice > 4) {
+			std::cout << "Invalid option!" << std::endl;
 		}
-	} while(choice < 1 || choice > 2);
+	} while(choice < 1 || choice > 4);
 
 	// Convert their entered choice to the following legend:
 	// 1 = Charmander
@@ -62,6 +69,10 @@ int prompt_second_pokemon(int blacklisted_pokemon) {
 	} else if (blacklisted_pokemon == 2) {
 		if (choice == 2) {
 			choice = 3;
+		}
+	} else if (blacklisted_pokemon == 3) {
+		if (choice == 3) {
+			choice = 4;
 		}
 	}
 	return choice;
