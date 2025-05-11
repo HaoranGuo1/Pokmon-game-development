@@ -224,3 +224,48 @@ void Pokemon::use_move(int index) {
         moves[index].uses_left--;
     }
 }
+
+
+struct MoveData {
+    const char* name;
+    const char* type;
+    int base_damage;
+    int uses_left;
+};
+
+struct PokemonData {
+    const char* name;
+    const char* type;
+    int attack;
+    int defense;
+    int hp;
+    int num_moves;
+    MoveData moves[2];
+};
+
+const PokemonData POKEMON_TABLE[] = {
+    { "Charmander", "fire", 6, 4, 18, 1,
+      { { "Ember", "fire", 5, 15 }, { "", "", 0, 0 } }
+    },
+    { "Squirtle", "water", 4, 6, 22, 2,
+      { { "Tackle", "normal", 3, 10000 }, { "Water Gun", "water", 5, 3 } }
+    },
+    { "Bulbasaur", "grass", 5, 5, 20, 2,
+      { { "Tackle", "normal", 3, 10000 }, { "Vine Whip", "grass", 5, 3 } }
+    },
+    { "Pidgey", "flying", 4, 4, 18, 2,
+      { { "Tackle", "normal", 3, 10000 }, { "Wing Attack", "flying", 5, 3 } }
+    }
+};
+
+Pokemon Pokemon::create_from_id(int id) {
+    const PokemonData& data = POKEMON_TABLE[id - 1];
+    Move* moves = new Move[data.num_moves];
+    for (int i = 0; i < data.num_moves; ++i) {
+        moves[i].name = data.moves[i].name;
+        moves[i].type = data.moves[i].type;
+        moves[i].base_damage = data.moves[i].base_damage;
+        moves[i].uses_left = data.moves[i].uses_left;
+    }
+    return Pokemon(data.name, data.type, data.attack, data.defense, data.hp, moves, data.num_moves);
+}

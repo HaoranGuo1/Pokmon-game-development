@@ -57,6 +57,8 @@ class Pokemon {
 
         // Reduce move usage by 1
         void use_move(int index);
+
+        static Pokemon create_from_id(int id); // id = 1~4
 };
 
 
