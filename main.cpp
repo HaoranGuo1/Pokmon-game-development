@@ -17,13 +17,11 @@ int main() {
 	// TODO Use if statements to determine which pokemon was chosen by
 	// each player and create respective pokemon objects with the
 	// appropriate types, stats, and moves
-
     Pokemon p1 = Pokemon::create_from_id(trainer_1_pokemon_choice);
     Pokemon p2 = Pokemon::create_from_id(trainer_2_pokemon_choice);
 
 	// TODO Create a battle object containing the two pokemon objects
 	// created above, and then start the battle
-
     Battle battle(p1, p2);
     battle.run();
 

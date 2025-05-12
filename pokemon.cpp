@@ -76,16 +76,21 @@ Pokemon::~Pokemon() {
     Side effects: modifies target.hp and prints attack information
 */
 void Pokemon::attack_other(Pokemon& target, int move_index) {
-    if (move_index < 0 || move_index >= num_moves) {
-        std::cout << "Invalid move index!" << std::endl;
-        return;
+    while (true) {
+        if (move_index < 0 || move_index >= num_moves) {
+            std::cout << "Invalid move index!" << std::endl;
+        } else if (moves[move_index].uses_left <= 0){
+            std::cout << "No uses left for this move!" << std::endl;
+        } else {
+            break;
+        }
+
+        // Reselected
+        print_moves();
+        std::cout << "Please select a valid move: ";
+        std::cin >> move_index;
     }
 
-    if (moves[move_index].uses_left <= 0){
-        std::cout << "No uses left for this move!" << std::endl;
-        return;
-    }
-    
     Move move = moves[move_index];
 
     // Type multiplier logic
@@ -197,7 +202,6 @@ int Pokemon::get_num_moves() const {
     return num_moves;
 }
 
-
 /*
     Function: get_move
     Description: Returns a copy of the move at the given index.
@@ -225,24 +229,12 @@ void Pokemon::use_move(int index) {
     }
 }
 
-
-struct MoveData {
-    const char* name;
-    const char* type;
-    int base_damage;
-    int uses_left;
-};
-
-struct PokemonData {
-    const char* name;
-    const char* type;
-    int attack;
-    int defense;
-    int hp;
-    int num_moves;
-    MoveData moves[2];
-};
-
+/*
+    Data Table: POKEMON_TABLE
+    Description: A constant array containing the base data for 4 predefined Pokémon.
+    Each entry contains name, type, stats, number of moves, and an array of move data.
+    This table is used by create_from_id() to instantiate Pokémon objects.
+*/
 const PokemonData POKEMON_TABLE[] = {
     { "Charmander", "fire", 6, 4, 18, 1,
       { { "Ember", "fire", 5, 15 }, { "", "", 0, 0 } }
@@ -258,8 +250,20 @@ const PokemonData POKEMON_TABLE[] = {
     }
 };
 
+/*
+    Function: create_from_id
+    Description: Constructs a Pokemon object based on its ID in the static POKEMON_TABLE.
+    The function dynamically allocates memory for the Pokémon's moves and copies the move data.
+    Parameters:
+        - id (int): The ID of the Pokémon to create (1-based index: 1 = Charmander, etc.)
+    Returns:
+        - A new Pokemon object initialized with the corresponding data from POKEMON_TABLE.
+    Side effects:
+        - Dynamically allocates memory for the moves array. Caller must manage object lifetime.
+*/
 Pokemon Pokemon::create_from_id(int id) {
     const PokemonData& data = POKEMON_TABLE[id - 1];
+    // Allocate memory for move array
     Move* moves = new Move[data.num_moves];
     for (int i = 0; i < data.num_moves; ++i) {
         moves[i].name = data.moves[i].name;
@@ -267,5 +271,6 @@ Pokemon Pokemon::create_from_id(int id) {
         moves[i].base_damage = data.moves[i].base_damage;
         moves[i].uses_left = data.moves[i].uses_left;
     }
+    // Create and rerurn Pokemon object
     return Pokemon(data.name, data.type, data.attack, data.defense, data.hp, moves, data.num_moves);
 }

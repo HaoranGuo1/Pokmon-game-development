@@ -55,10 +55,10 @@ int prompt_second_pokemon(int blacklisted_pokemon) {
 
 		std::cout << std::endl;
 
-		if (choice < 1 || choice > 4) {
+		if (choice < 1 || choice > 3) {
 			std::cout << "Invalid option!" << std::endl;
 		}
-	} while(choice < 1 || choice > 4);
+	} while(choice < 1 || choice > 3);
 
 	// Convert their entered choice to the following legend:
 	// 1 = Charmander
@@ -67,13 +67,17 @@ int prompt_second_pokemon(int blacklisted_pokemon) {
 	if (blacklisted_pokemon == 1) {
 		choice = choice + 1;
 	} else if (blacklisted_pokemon == 2) {
-		if (choice == 2) {
-			choice = 3;
-		}
+    	if (choice == 1) choice = 1;        // Charmander
+    	else if (choice == 2) choice = 3;   // Bulbasaur
+    	else if (choice == 3) choice = 4;	// Pidgey
 	} else if (blacklisted_pokemon == 3) {
-		if (choice == 3) {
-			choice = 4;
-		}
+		if (choice == 1) choice = 1;        // Charmander
+    	else if (choice == 2) choice = 2;   // Squirtle
+    	else if (choice == 3) choice = 4;	// Pidgey
+	} else if (blacklisted_pokemon == 4) {
+		if (choice == 1) choice = 1;		// Charmander
+    	else if (choice == 2) choice = 2;	// Squirtle
+    	else if (choice == 3) choice = 3;	// Bulbasaur
 	}
 	return choice;
 }

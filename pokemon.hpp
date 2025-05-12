@@ -9,6 +9,23 @@
     Description: Defines the Pokemon class, which stores a Pokémon's name, type, stats, and a dynamic array of moves. It supports actions like attacking and healing.
 */
 
+struct MoveData {
+    const char* name;
+    const char* type;
+    int base_damage;
+    int uses_left;
+};
+
+struct PokemonData {
+    const char* name;
+    const char* type;
+    int attack;
+    int defense;
+    int hp;
+    int num_moves;
+    MoveData moves[2];
+};
+
 class Pokemon {
     private:
         std::string name;
@@ -57,8 +74,9 @@ class Pokemon {
 
         // Reduce move usage by 1
         void use_move(int index);
-
-        static Pokemon create_from_id(int id); // id = 1~4
+        
+        // id = 1~4
+        static Pokemon create_from_id(int id); 
 };
 
 
