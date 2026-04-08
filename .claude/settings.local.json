@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl --version)",
+      "Bash(curl -L \"https://raw.githubusercontent.com/yhirose/cpp-httplib/master/httplib.h\" -o \"c:/Users/admin/Desktop/PROJECT/programming-assignment-3-pokemon-battle-HaoranGuo1/httplib.h\" --progress-bar)",
+      "Bash(g++ -std=c++17 -o server.exe server.cpp pokemon.cpp -lws2_32)",
+      "Bash(mv battle.cpp battle.hpp pokemon.cpp pokemon.hpp move.hpp startup.cpp startup.hpp main.cpp src/)",
+      "Bash(mv server.cpp httplib.h server/)",
+      "Bash(mv index.html web/)",
+      "Bash(mv main:*)"
+    ]
+  }
+}

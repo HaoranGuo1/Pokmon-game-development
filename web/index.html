@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokemon Battle Arena</title>
+<style>
+/* ───────────── Reset & Base ───────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d0d1a;
+  --card:      #1a1a2e;
+  --card2:     #16213e;
+  --border:    #2a2a4a;
+  --gold:      #ffd700;
+  --gold2:     #ffaa00;
+  --text:      #e0e0ff;
+  --muted:     #7070a0;
+  --p1:        #ff6b6b;
+  --p2:        #4a9eff;
+  --fire:      #ff6b35;
+  --water:     #4a90e2;
+  --grass:     #5cb85c;
+  --flying:    #a78bfa;
+  --normal:    #9ca3af;
+  --hp-high:   #22c55e;
+  --hp-mid:    #eab308;
+  --hp-low:    #ef4444;
+  --btn:       #2a2a4e;
+  --btn-hover: #3a3a6e;
+  --radius:    12px;
+  --shadow:    0 4px 24px rgba(0,0,0,.5);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ───────────── Header ───────────── */
+header {
+  width: 100%;
+  text-align: center;
+  padding: 24px 16px 12px;
+  background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);
+  border-bottom: 2px solid var(--gold);
+  box-shadow: 0 2px 20px rgba(255,215,0,.2);
+}
+header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold2), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+header p { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+/* ───────────── Screens ───────────── */
+#screen-select, #screen-battle, #screen-over {
+  width: 100%;
+  max-width: 900px;
+  padding: 28px 16px;
+  display: none;
+  animation: fadeIn .35s ease;
+}
+#screen-select.active,
+#screen-battle.active,
+#screen-over.active { display: block; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ───────────── Section titles ───────────── */
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ───────────── Pokemon Cards (select) ───────────── */
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+@media (max-width: 600px) { .pokemon-grid { grid-template-columns: repeat(2,1fr); } }
+
+.poke-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+  position: relative;
+  user-select: none;
+}
+.poke-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.poke-card.selected-p1 { border-color: var(--p1); box-shadow: 0 0 16px rgba(255,107,107,.4); }
+.poke-card.selected-p2 { border-color: var(--p2); box-shadow: 0 0 16px rgba(74,158,255,.4); }
+.poke-card.disabled     { opacity: .4; cursor: not-allowed; pointer-events: none; }
+
+.poke-card .badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: .65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+}
+.badge-p1 { background: var(--p1); color: #fff; }
+.badge-p2 { background: var(--p2); color: #fff; }
+
+.poke-emoji { font-size: 2.8rem; margin-bottom: 8px; display: block; }
+.poke-name  { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+.poke-type  { display: inline-block; padding: 2px 10px; border-radius: 20px;
+              font-size: .7rem; font-weight: 700; text-transform: uppercase;
+              margin-bottom: 10px; }
+.poke-stats { display: flex; justify-content: space-around; font-size: .75rem; color: var(--muted); }
+.poke-stats span { text-align: center; }
+.poke-stats b   { display: block; color: var(--text); font-size: .9rem; }
+
+/* ───────────── Start Button ───────────── */
+.btn-start {
+  display: block; margin: 0 auto;
+  padding: 14px 48px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #000; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;
+  border: none; border-radius: 50px; cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 4px 20px rgba(255,215,0,.3);
+}
+.btn-start:hover  { transform: scale(1.05); box-shadow: 0 6px 28px rgba(255,215,0,.5); }
+.btn-start:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+
+/* ───────────── Type colors ───────────── */
+.type-fire    { background:#ff6b3522; color:#ff6b35; border:1px solid #ff6b35; }
+.type-water   { background:#4a90e222; color:#4a90e2; border:1px solid #4a90e2; }
+.type-grass   { background:#5cb85c22; color:#5cb85c; border:1px solid #5cb85c; }
+.type-flying  { background:#a78bfa22; color:#a78bfa; border:1px solid #a78bfa; }
+.type-normal  { background:#9ca3af22; color:#9ca3af; border:1px solid #9ca3af; }
+
+/* ───────────── Battle Screen ───────────── */
+.battle-arena {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: start;
+}
+@media (max-width: 580px) {
+  .battle-arena { grid-template-columns: 1fr 1fr; }
+  .vs-divider   { display: none; }
+}
+
+.fighter-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  transition: border-color .3s, box-shadow .3s;
+}
+.fighter-card.active-p1 { border-color: var(--p1); box-shadow: 0 0 18px rgba(255,107,107,.3); }
+.fighter-card.active-p2 { border-color: var(--p2); box-shadow: 0 0 18px rgba(74,158,255,.3); }
+.fighter-card.fainted   { opacity: .5; filter: grayscale(1); }
+
+.fighter-label { font-size: .7rem; font-weight: 700; letter-spacing: 1px;
+                 text-transform: uppercase; margin-bottom: 6px; }
+.label-p1 { color: var(--p1); }
+.label-p2 { color: var(--p2); }
+
+.fighter-name  { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+.fighter-emoji { font-size: 2.4rem; margin: 8px 0; display: block; text-align: center; }
+.fighter-hp-text { font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+.fighter-hp-text b { color: var(--text); }
+
+/* HP bar */
+.hp-bar-bg {
+  background: #111;
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.hp-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .5s ease, background .5s;
+}
+
+/* VS divider */
+.vs-divider {
+  align-self: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 12px rgba(255,215,0,.5);
+}
+
+/* ───────────── Turn panel ───────────── */
+.turn-panel {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.turn-label {
+  font-size: .85rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 14px; text-align: center;
+}
+.turn-label.t1 { color: var(--p1); }
+.turn-label.t2 { color: var(--p2); }
+
+.action-row {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--btn);
+  color: var(--text);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-2px); }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+.btn-attack { border-color: #ef4444; }
+.btn-attack:hover:not(:disabled) { border-color: #ef4444; background: rgba(239,68,68,.15); }
+
+.btn-heal { border-color: #22c55e; }
+.btn-heal:hover:not(:disabled) { border-color: #22c55e; background: rgba(34,197,94,.15); }
+
+/* Move buttons */
+.moves-grid { display: flex; flex-direction: column; gap: 8px; }
+.move-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--btn);
+  color: var(--text);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.move-btn:hover:not(:disabled) { background: var(--btn-hover); transform: translateY(-2px); }
+.move-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.move-btn .move-uses { font-size: .75rem; color: var(--muted); }
+.move-btn .move-badge {
+  font-size: .65rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 20px; margin-left: 8px;
+}
+
+/* ───────────── Battle Log ───────────── */
+.log-panel {
+  background: var(--card2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  max-height: 220px;
+  overflow-y: auto;
+  font-size: .82rem;
+  font-family: 'Courier New', monospace;
+  line-height: 1.7;
+}
+.log-panel::-webkit-scrollbar { width: 5px; }
+.log-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+.log-entry { color: var(--muted); }
+.log-entry.log-battle  { color: var(--gold); font-weight: 700; }
+.log-entry.log-attack  { color: var(--text); }
+.log-entry.log-crit    { color: #f87171; font-weight: 700; }
+.log-entry.log-super   { color: #34d399; font-weight: 700; }
+.log-entry.log-notvery { color: #fbbf24; }
+.log-entry.log-heal    { color: #86efac; }
+.log-entry.log-turn    { color: var(--muted); font-style: italic; }
+.log-entry.log-over    { color: var(--gold); font-weight: 700; }
+
+/* ───────────── Battle Over ───────────── */
+#screen-over {
+  text-align: center;
+  padding-top: 60px;
+}
+.over-title {
+  font-size: 2.5rem; font-weight: 900; letter-spacing: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 12px;
+}
+.over-winner {
+  font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 36px;
+}
+.btn-play-again {
+  padding: 14px 48px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #000; font-weight: 800; font-size: 1rem; letter-spacing: 1px;
+  border: none; border-radius: 50px; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,215,0,.3);
+  transition: transform .15s;
+}
+.btn-play-again:hover { transform: scale(1.06); }
+
+/* ───────────── Toasts ───────────── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: #ef4444; color: #fff; padding: 10px 22px; border-radius: 8px;
+  font-weight: 600; font-size: .9rem; opacity: 0;
+  transition: opacity .3s; pointer-events: none; z-index: 99;
+}
+#toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ POKEMON BATTLE ARENA ⚡</h1>
+  <p>Turn-based battle powered by C++ backend</p>
+</header>
+
+<!-- ──────────── SELECTION SCREEN ──────────── -->
+<div id="screen-select" class="active">
+  <p class="section-title" id="select-prompt">Player 1 — Choose Your Pokemon</p>
+
+  <div class="pokemon-grid" id="pokemon-grid"></div>
+
+  <button class="btn-start" id="btn-start" disabled>Start Battle</button>
+</div>
+
+<!-- ──────────── BATTLE SCREEN ──────────── -->
+<div id="screen-battle">
+  <!-- Arena -->
+  <div class="battle-arena">
+    <div class="fighter-card" id="card-p1">
+      <div class="fighter-label label-p1">PLAYER 1</div>
+      <div class="fighter-name" id="p1-name"></div>
+      <span class="fighter-emoji" id="p1-emoji"></span>
+      <div class="fighter-hp-text"><b id="p1-hp"></b> HP</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="p1-hp-bar"></div></div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="fighter-card" id="card-p2">
+      <div class="fighter-label label-p2">PLAYER 2</div>
+      <div class="fighter-name" id="p2-name"></div>
+      <span class="fighter-emoji" id="p2-emoji"></span>
+      <div class="fighter-hp-text"><b id="p2-hp"></b> HP</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="p2-hp-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Turn / Actions -->
+  <div class="turn-panel" id="turn-panel">
+    <div class="turn-label" id="turn-label"></div>
+
+    <!-- Phase: choose action -->
+    <div id="phase-action">
+      <div class="action-row">
+        <button class="btn btn-attack" id="btn-do-attack" onclick="showMoves()">⚔️ Attack</button>
+        <button class="btn btn-heal"   id="btn-do-heal"   onclick="doHeal()">💊 Heal</button>
+      </div>
+    </div>
+
+    <!-- Phase: choose move -->
+    <div id="phase-moves" style="display:none">
+      <button class="btn" style="margin-bottom:10px;font-size:.8rem" onclick="backToAction()">← Back</button>
+      <div class="moves-grid" id="moves-grid"></div>
+    </div>
+  </div>
+
+  <!-- Battle Log -->
+  <p class="section-title" style="margin-bottom:8px">Battle Log</p>
+  <div class="log-panel" id="log-panel"></div>
+</div>
+
+<!-- ──────────── BATTLE OVER SCREEN ──────────── -->
+<div id="screen-over">
+  <div class="over-title">BATTLE OVER</div>
+  <div class="over-winner" id="over-winner"></div>
+  <button class="btn-play-again" onclick="resetGame()">Play Again</button>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ──────────────────── Constants ────────────────────
+const API = 'http://localhost:8080';
+
+const POKEMON_INFO = {
+  1: { emoji: '🦎', name: 'Charmander', type: 'fire',   atk:6, def:4, hp:18 },
+  2: { emoji: '🐢', name: 'Squirtle',   type: 'water',  atk:4, def:6, hp:22 },
+  3: { emoji: '🌱', name: 'Bulbasaur',  type: 'grass',  atk:5, def:5, hp:20 },
+  4: { emoji: '🐦', name: 'Pidgey',     type: 'flying', atk:4, def:4, hp:18 }
+};
+
+const TYPE_MOVE_COLORS = {
+  fire: 'type-fire', water: 'type-water', grass: 'type-grass',
+  flying: 'type-flying', normal: 'type-normal'
+};
+
+// ──────────────────── State ────────────────────────
+let selectedP1 = null;
+let selectedP2 = null;
+let selectingFor = 1;       // 1 or 2
+let gameState   = null;
+let renderedLogCount = 0;
+
+// ──────────────────── Init ────────────────────────
+function init() {
+  buildPokemonGrid();
+  show('screen-select');
+}
+
+function show(id) {
+  ['screen-select','screen-battle','screen-over'].forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+}
+
+// ──────────────────── Selection ────────────────────
+function buildPokemonGrid() {
+  const grid = document.getElementById('pokemon-grid');
+  grid.innerHTML = '';
+  for (const [id, info] of Object.entries(POKEMON_INFO)) {
+    const card = document.createElement('div');
+    card.className = 'poke-card';
+    card.dataset.id = id;
+    card.innerHTML = `
+      <span class="poke-emoji">${info.emoji}</span>
+      <div class="poke-name">${info.name}</div>
+      <span class="poke-type type-${info.type}">${info.type}</span>
+      <div class="poke-stats">
+        <span><b>${info.atk}</b>ATK</span>
+        <span><b>${info.def}</b>DEF</span>
+        <span><b>${info.hp}</b>HP</span>
+      </div>`;
+    card.addEventListener('click', () => selectPokemon(parseInt(id), card));
+    grid.appendChild(card);
+  }
+}
+
+function selectPokemon(id, card) {
+  const cards = document.querySelectorAll('.poke-card');
+
+  if (selectingFor === 1) {
+    // Reset P1 selection visuals
+    cards.forEach(c => { c.classList.remove('selected-p1', 'disabled'); });
+    // Remove old P2 badge if any
+    document.querySelectorAll('.badge-p2').forEach(b => b.remove());
+
+    selectedP1 = id;
+    card.classList.add('selected-p1');
+    const badge = document.createElement('span');
+    badge.className = 'badge badge-p1'; badge.textContent = 'P1';
+    card.appendChild(badge);
+
+    // Now P1 is locked; let P2 pick (disable P1's card)
+    selectingFor = 2;
+    selectedP2 = null;
+
+    // Disable the card Player 1 just chose for P2
+    cards.forEach(c => {
+      if (parseInt(c.dataset.id) === selectedP1) c.classList.add('disabled');
+    });
+
+    document.getElementById('select-prompt').textContent = 'Player 2 — Choose Your Pokemon';
+    document.getElementById('btn-start').disabled = true;
+
+  } else {
+    // Reset P2 selection
+    cards.forEach(c => {
+      if (!c.classList.contains('selected-p1') && parseInt(c.dataset.id) !== selectedP1)
+        c.classList.remove('selected-p2');
+    });
+    document.querySelectorAll('.badge-p2').forEach(b => b.remove());
+
+    selectedP2 = id;
+    card.classList.add('selected-p2');
+    const badge = document.createElement('span');
+    badge.className = 'badge badge-p2'; badge.textContent = 'P2';
+    card.appendChild(badge);
+
+    document.getElementById('btn-start').disabled = false;
+  }
+}
+
+document.getElementById('btn-start').addEventListener('click', startBattle);
+
+async function startBattle() {
+  if (!selectedP1 || !selectedP2) return;
+  try {
+    const res = await fetch(`${API}/api/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p1_id: selectedP1, p2_id: selectedP2 })
+    });
+    if (!res.ok) { toast('Failed to start battle'); return; }
+    gameState = await res.json();
+    renderedLogCount = 0;
+    show('screen-battle');
+    renderBattle();
+  } catch (e) {
+    toast('Cannot connect to server. Is server.exe running?');
+  }
+}
+
+// ──────────────────── Battle Rendering ─────────────────────────────
+function pokeEmoji(name) {
+  for (const info of Object.values(POKEMON_INFO)) {
+    if (info.name === name) return info.emoji;
+  }
+  return '❓';
+}
+
+function hpColor(ratio) {
+  if (ratio > 0.5) return 'var(--hp-high)';
+  if (ratio > 0.25) return 'var(--hp-mid)';
+  return 'var(--hp-low)';
+}
+
+function renderBattle() {
+  if (!gameState) return;
+  const { p1, p2, turn, p1_used_heal, p2_used_heal, over, log } = gameState;
+
+  // ── Fighter cards ──
+  const renderFighter = (pokemon, prefix, isActive) => {
+    document.getElementById(`${prefix}-name`).textContent  = pokemon.name;
+    document.getElementById(`${prefix}-emoji`).textContent = pokeEmoji(pokemon.name);
+    document.getElementById(`${prefix}-hp`).textContent    = `${pokemon.hp} / ${pokemon.max_hp}`;
+    const ratio = pokemon.hp / pokemon.max_hp;
+    const bar   = document.getElementById(`${prefix}-hp-bar`);
+    bar.style.width      = `${Math.max(0, ratio * 100)}%`;
+    bar.style.background = hpColor(ratio);
+    const card = document.getElementById(`card-${prefix}`);
+    card.classList.toggle('fainted', pokemon.is_fainted);
+  };
+
+  renderFighter(p1, 'p1', turn === 0);
+  renderFighter(p2, 'p2', turn === 1);
+
+  // Active card highlight
+  document.getElementById('card-p1').classList.remove('active-p1', 'active-p2');
+  document.getElementById('card-p2').classList.remove('active-p1', 'active-p2');
+  if (!over) {
+    if (turn === 0) document.getElementById('card-p1').classList.add('active-p1');
+    else            document.getElementById('card-p2').classList.add('active-p2');
+  }
+
+  // ── Turn label ──
+  const label   = document.getElementById('turn-label');
+  const usedHeal = turn === 0 ? p1_used_heal : p2_used_heal;
+  label.textContent = over ? 'Battle Over!' : `Player ${turn + 1}'s Turn`;
+  label.className = `turn-label ${turn === 0 ? 't1' : 't2'}`;
+
+  // ── Action buttons ──
+  const healBtn = document.getElementById('btn-do-heal');
+  healBtn.disabled = over || usedHeal;
+  healBtn.textContent = usedHeal ? '💊 Heal (Used)' : '💊 Heal';
+  document.getElementById('btn-do-attack').disabled = over;
+  document.getElementById('turn-panel').style.display = over ? 'none' : '';
+
+  // reset to action phase
+  backToAction();
+
+  // ── Battle log ──
+  appendNewLogs(log);
+}
+
+function appendNewLogs(log) {
+  const panel = document.getElementById('log-panel');
+  for (let i = renderedLogCount; i < log.length; i++) {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry ' + classifyLog(log[i]);
+    entry.textContent = '> ' + log[i];
+    panel.appendChild(entry);
+  }
+  renderedLogCount = log.length;
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function classifyLog(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('battle start') || m.includes('battle over')) return 'log-battle';
+  if (m.includes('critical hit'))  return 'log-crit';
+  if (m.includes('super effective')) return 'log-super';
+  if (m.includes('not very effective')) return 'log-notvery';
+  if (m.includes('healed'))        return 'log-heal';
+  if (m.includes("'s turn"))       return 'log-turn';
+  if (m.includes('wins'))          return 'log-over';
+  if (m.includes('uses '))         return 'log-attack';
+  return '';
+}
+
+// ──────────────────── Action Phases ────────────────────────────────
+function showMoves() {
+  document.getElementById('phase-action').style.display = 'none';
+  document.getElementById('phase-moves').style.display  = '';
+
+  const current = gameState.turn === 0 ? gameState.p1 : gameState.p2;
+  const grid    = document.getElementById('moves-grid');
+  grid.innerHTML = '';
+
+  current.moves.forEach((move, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'move-btn';
+    btn.disabled  = move.uses_left <= 0;
+
+    const colorClass = TYPE_MOVE_COLORS[move.type] || 'type-normal';
+    btn.innerHTML = `
+      <span>${move.name} <span class="poke-type ${colorClass} move-badge">${move.type}</span></span>
+      <span class="move-uses">DMG: ${move.base_damage} &nbsp;|&nbsp; Uses: ${move.uses_left}</span>`;
+
+    btn.addEventListener('click', () => doAttack(idx));
+    grid.appendChild(btn);
+  });
+}
+
+function backToAction() {
+  document.getElementById('phase-action').style.display = '';
+  document.getElementById('phase-moves').style.display  = 'none';
+}
+
+// ──────────────────── API Actions ──────────────────────────────────
+async function doAttack(moveIndex) {
+  try {
+    const res = await fetch(`${API}/api/attack`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ move_index: moveIndex })
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'Attack failed'); return; }
+    gameState = data;
+    renderBattle();
+    if (gameState.over) showBattleOver();
+  } catch (e) {
+    toast('Connection error');
+  }
+}
+
+async function doHeal() {
+  try {
+    const res = await fetch(`${API}/api/heal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || 'Heal failed'); return; }
+    gameState = data;
+    renderBattle();
+  } catch (e) {
+    toast('Connection error');
+  }
+}
+
+function showBattleOver() {
+  setTimeout(() => {
+    document.getElementById('over-winner').textContent =
+      `🏆  ${gameState.winner} Wins!  🏆`;
+    show('screen-over');
+  }, 800);
+}
+
+async function resetGame() {
+  await fetch(`${API}/api/reset`, { method: 'POST', body: '{}' }).catch(() => {});
+  selectedP1 = null; selectedP2 = null; selectingFor = 1;
+  gameState = null; renderedLogCount = 0;
+  document.getElementById('select-prompt').textContent = 'Player 1 — Choose Your Pokemon';
+  document.getElementById('btn-start').disabled = true;
+  buildPokemonGrid();
+  show('screen-select');
+}
+
+// ──────────────────── Toast ────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ──────────────────── Start ────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

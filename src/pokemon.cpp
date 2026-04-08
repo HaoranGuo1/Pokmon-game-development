@@ -194,6 +194,10 @@ std::string Pokemon::get_name() const {
 }
 
 
+std::string Pokemon::get_type() const { return type; }
+int Pokemon::get_hp() const { return hp; }
+int Pokemon::get_max_hp() const { return max_hp; }
+
 /*
     Function: get_num_moves
     Description: Returns the number of available moves.

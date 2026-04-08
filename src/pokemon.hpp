@@ -63,6 +63,15 @@ class Pokemon {
         // Get Pokémon name
         std::string get_name() const;
 
+        // Get Pokémon type
+        std::string get_type() const;
+
+        // Get current HP
+        int get_hp() const;
+
+        // Get max HP
+        int get_max_hp() const;
+
         // Get number of moves
         int get_num_moves() const;
 
